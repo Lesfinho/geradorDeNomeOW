@@ -24,15 +24,15 @@ export default function AddNameForm({ onNameAdded }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Adicionar Nome</h2>
+    <div className="bg-gray-900/80 backdrop-blur p-6 rounded-lg border border-gray-700">
+      <h2 className="text-lg font-semibold text-white mb-4">Adicionar Nome</h2>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Digite um nome"
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-500"
           maxLength={12}
           required
         />
@@ -44,7 +44,7 @@ export default function AddNameForm({ onNameAdded }) {
           {loading ? '...' : 'Adicionar'}
         </button>
       </form>
-      {success && <p className="text-sm text-green-600 mt-2">{success}</p>}
+      {success && <p className="text-sm text-green-400 mt-2">{success}</p>}
     </div>
   );
 }

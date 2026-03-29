@@ -7,6 +7,7 @@ import DrawName from './components/DrawName';
 import PoolStats from './components/PoolStats';
 import NameList from './components/NameList';
 import Suggestions from './components/Suggestions';
+import GifBackground from './components/GifBackground';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -62,7 +63,7 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <GifBackground>
       <Header user={user} onLogout={handleLogout} />
       <div className="max-w-2xl mx-auto px-6 mt-6">
         <div className="flex gap-2 mb-6">
@@ -70,10 +71,10 @@ function App() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer ${
+              className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition ${
                 tab === t.id
                   ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  : 'bg-gray-900/80 text-gray-300 hover:bg-gray-800'
               }`}
             >
               {t.label}
@@ -92,7 +93,7 @@ function App() {
         {tab === 'list' && <NameList refreshKey={refreshKey} />}
         {tab === 'suggest' && <Suggestions onAddSuggestion={handleAddSuggestion} />}
       </main>
-    </div>
+    </GifBackground>
   );
 }
 

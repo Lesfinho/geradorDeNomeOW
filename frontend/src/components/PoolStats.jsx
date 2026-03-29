@@ -2,9 +2,9 @@ export default function PoolStats({ stats }) {
   if (!stats) return null;
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md text-center">
-      <p className="text-gray-600">
-        <span className="text-2xl font-bold text-blue-600">{stats.available}</span>
+    <div className="bg-gray-900/80 backdrop-blur p-4 rounded-lg border border-gray-700 text-center">
+      <p className="text-gray-300">
+        <span className="text-2xl font-bold text-blue-400">{stats.available}</span>
         <span className="text-sm"> nomes disponíveis</span>
       </p>
     </div>

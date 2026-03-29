@@ -20,8 +20,8 @@ export default function DrawName({ onDrawn }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md text-center">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Sortear Nome</h2>
+    <div className="bg-gray-900/80 backdrop-blur p-6 rounded-lg border border-gray-700 text-center">
+      <h2 className="text-lg font-semibold text-white mb-4">Sortear Nome</h2>
       <button
         onClick={handleDraw}
         disabled={loading}
@@ -33,13 +33,13 @@ export default function DrawName({ onDrawn }) {
       {result && (
         <div className="mt-6">
           {result.error ? (
-            <p className="text-red-500">Erro ao sortear.</p>
+            <p className="text-red-400">Erro ao sortear.</p>
           ) : result.empty ? (
-            <p className="text-gray-500 text-lg">Nenhum nome disponível no pool!</p>
+            <p className="text-gray-400 text-lg">Nenhum nome disponível no pool!</p>
           ) : (
             <div>
-              <p className="text-3xl font-bold text-purple-700">{result.name.name}</p>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-3xl font-bold text-purple-400">{result.name.name}</p>
+              <p className="text-sm text-gray-500 mt-1">
                 Adicionado por {result.name.addedBy}
               </p>
             </div>
