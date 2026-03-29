@@ -5,6 +5,7 @@ import RegisterForm from './components/RegisterForm';
 import AddNameForm from './components/AddNameForm';
 import DrawName from './components/DrawName';
 import PoolStats from './components/PoolStats';
+import NameList from './components/NameList';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -12,6 +13,8 @@ function App() {
     return saved ? JSON.parse(saved) : null;
   });
   const [stats, setStats] = useState(null);
+  const [tab, setTab] = useState('main');
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const refreshStats = useCallback(async () => {
     try {
@@ -20,6 +23,7 @@ function App() {
     } catch {
       // ignore
     }
+    setRefreshKey((k) => k + 1);
   }, []);
 
   useEffect(() => {
@@ -44,10 +48,40 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={user} onLogout={handleLogout} />
-      <main className="max-w-2xl mx-auto p-6 space-y-6 mt-6">
-        <PoolStats stats={stats} />
-        <AddNameForm userId={user.id} onNameAdded={refreshStats} />
-        <DrawName userId={user.id} onDrawn={refreshStats} />
+      <div className="max-w-2xl mx-auto px-6 mt-6">
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setTab('main')}
+            className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer ${
+              tab === 'main'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            Início
+          </button>
+          <button
+            onClick={() => setTab('list')}
+            className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer ${
+              tab === 'list'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            Todos os Nomes
+          </button>
+        </div>
+      </div>
+      <main className="max-w-2xl mx-auto px-6 pb-6 space-y-6">
+        {tab === 'main' ? (
+          <>
+            <PoolStats stats={stats} />
+            <AddNameForm userId={user.id} onNameAdded={refreshStats} />
+            <DrawName userId={user.id} onDrawn={refreshStats} />
+          </>
+        ) : (
+          <NameList refreshKey={refreshKey} />
+        )}
       </main>
     </div>
   );

@@ -30,6 +30,12 @@ export async function drawName(userId) {
   return res.json();
 }
 
+export async function getAllNames() {
+  const res = await fetch(`${BASE}/names/all`);
+  if (!res.ok) throw new Error('Erro ao buscar nomes');
+  return res.json();
+}
+
 export async function getStats() {
   const res = await fetch(`${BASE}/names/stats`);
   if (!res.ok) throw new Error('Erro ao buscar stats');

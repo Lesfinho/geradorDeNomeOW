@@ -79,6 +79,28 @@ nameRouter.post("/draw", async (req, res) => {
   }
 });
 
+nameRouter.get("/all", async (_req, res) => {
+  try {
+    const entries = await prisma.nameEntry.findMany({
+      include: { addedBy: true, drawnBy: true },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json(
+      entries.map((e) => ({
+        id: e.id,
+        name: e.name,
+        isUsed: e.isUsed,
+        addedBy: e.addedBy.username,
+        drawnBy: e.drawnBy?.username ?? null,
+      }))
+    );
+  } catch (err) {
+    console.error("List all error:", err);
+    res.status(500).json({ error: String(err) });
+  }
+});
+
 nameRouter.get("/stats", async (_req, res) => {
   try {
     const [available, total] = await Promise.all([
