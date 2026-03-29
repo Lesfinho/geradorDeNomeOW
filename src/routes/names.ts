@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../prisma";
 import { authMiddleware } from "../auth";
 import { notify } from "../discord";
+import { suggestNames } from "../markov";
 
 export const nameRouter = Router();
 
@@ -92,6 +93,19 @@ nameRouter.get("/all", authMiddleware, async (_req, res) => {
     );
   } catch (err) {
     console.error("List all error:", err);
+    res.status(500).json({ error: String(err) });
+  }
+});
+
+nameRouter.get("/suggest", authMiddleware, async (_req, res) => {
+  try {
+    const entries = await prisma.nameEntry.findMany({ select: { name: true } });
+    const names = entries.map((e) => e.name);
+    const suggestions = suggestNames(names, 5);
+
+    res.json({ suggestions, minReached: names.length >= 10, total: names.length });
+  } catch (err) {
+    console.error("Suggest error:", err);
     res.status(500).json({ error: String(err) });
   }
 });

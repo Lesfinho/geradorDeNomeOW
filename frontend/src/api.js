@@ -71,6 +71,14 @@ export async function getAllNames() {
   return res.json();
 }
 
+export async function getSuggestions() {
+  const res = await fetch(`${BASE}/names/suggest`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) return { suggestions: [], minReached: false, total: 0 };
+  return res.json();
+}
+
 export async function getStats() {
   const res = await fetch(`${BASE}/names/stats`);
   if (!res.ok) throw new Error('Erro ao buscar stats');

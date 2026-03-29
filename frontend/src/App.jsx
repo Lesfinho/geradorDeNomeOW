@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStats } from './api';
+import { getStats, addName } from './api';
 import Header from './components/Header';
 import RegisterForm from './components/RegisterForm';
 import AddNameForm from './components/AddNameForm';
 import DrawName from './components/DrawName';
 import PoolStats from './components/PoolStats';
 import NameList from './components/NameList';
+import Suggestions from './components/Suggestions';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -41,47 +42,55 @@ function App() {
     setStats(null);
   };
 
+  const handleAddSuggestion = async (name) => {
+    try {
+      await addName(name);
+      refreshStats();
+    } catch {
+      // ignore
+    }
+  };
+
   if (!user) {
     return <RegisterForm onRegister={handleRegister} />;
   }
+
+  const tabs = [
+    { id: 'main', label: 'Início' },
+    { id: 'list', label: 'Todos os Nomes' },
+    { id: 'suggest', label: 'Sugestões' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header user={user} onLogout={handleLogout} />
       <div className="max-w-2xl mx-auto px-6 mt-6">
         <div className="flex gap-2 mb-6">
-          <button
-            onClick={() => setTab('main')}
-            className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer ${
-              tab === 'main'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Início
-          </button>
-          <button
-            onClick={() => setTab('list')}
-            className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer ${
-              tab === 'list'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            Todos os Nomes
-          </button>
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`px-4 py-2 rounded-md text-sm font-medium cursor-pointer ${
+                tab === t.id
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
       </div>
       <main className="max-w-2xl mx-auto px-6 pb-6 space-y-6">
-        {tab === 'main' ? (
+        {tab === 'main' && (
           <>
             <PoolStats stats={stats} />
             <AddNameForm onNameAdded={refreshStats} />
             <DrawName onDrawn={refreshStats} />
           </>
-        ) : (
-          <NameList refreshKey={refreshKey} />
         )}
+        {tab === 'list' && <NameList refreshKey={refreshKey} />}
+        {tab === 'suggest' && <Suggestions onAddSuggestion={handleAddSuggestion} />}
       </main>
     </div>
   );
