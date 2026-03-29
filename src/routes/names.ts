@@ -11,8 +11,8 @@ nameRouter.post("/", authMiddleware, async (req, res) => {
     const user = (req as any).user;
     const { name } = req.body;
 
-    if (!name || name.trim().length === 0) {
-      res.status(400).json({ error: "Nome é obrigatório" });
+    if (!name || name.trim().length === 0 || name.trim().length > 12) {
+      res.status(400).json({ error: "Nome deve ter entre 1 e 12 caracteres" });
       return;
     }
 
