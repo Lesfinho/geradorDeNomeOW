@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
+import { generateToken } from "../auth";
 
 export const userRouter = Router();
 
@@ -17,19 +18,25 @@ userRouter.post("/register", async (req, res) => {
     });
 
     if (existing) {
+      // Gera novo token ao "logar" de novo
+      const updated = await prisma.appUser.update({
+        where: { id: existing.id },
+        data: { token: generateToken() },
+      });
+
       res.json({
-        user: { id: existing.id, username: existing.username },
+        user: { id: updated.id, username: updated.username, token: updated.token },
         alreadyExisted: true,
       });
       return;
     }
 
     const user = await prisma.appUser.create({
-      data: { username: username.trim() },
+      data: { username: username.trim(), token: generateToken() },
     });
 
     res.json({
-      user: { id: user.id, username: user.username },
+      user: { id: user.id, username: user.username, token: user.token },
       alreadyExisted: false,
     });
   } catch (err) {

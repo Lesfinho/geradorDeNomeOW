@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { drawName } from '../api';
 
-export default function DrawName({ userId, onDrawn }) {
+export default function DrawName({ onDrawn }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -9,7 +9,7 @@ export default function DrawName({ userId, onDrawn }) {
     setLoading(true);
     setResult(null);
     try {
-      const data = await drawName(userId);
+      const data = await drawName();
       setResult(data);
       onDrawn();
     } catch {

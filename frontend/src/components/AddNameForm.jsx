@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { addName } from '../api';
 
-export default function AddNameForm({ userId, onNameAdded }) {
+export default function AddNameForm({ onNameAdded }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -11,7 +11,7 @@ export default function AddNameForm({ userId, onNameAdded }) {
     setLoading(true);
     setSuccess('');
     try {
-      await addName(name.trim(), userId);
+      await addName(name.trim());
       setSuccess(`"${name.trim()}" adicionado!`);
       setName('');
       onNameAdded();

@@ -10,6 +10,7 @@ datasource db {
 model AppUser {
   id        Int         @id @default(autoincrement())
   username  String      @unique @db.VarChar(50)
+  token     String      @unique @db.VarChar(64)
   createdAt DateTime    @default(now())
   added     NameEntry[] @relation("AddedBy")
   drawn     NameEntry[] @relation("DrawnBy")

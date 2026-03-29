@@ -76,8 +76,8 @@ function App() {
         {tab === 'main' ? (
           <>
             <PoolStats stats={stats} />
-            <AddNameForm userId={user.id} onNameAdded={refreshStats} />
-            <DrawName userId={user.id} onDrawn={refreshStats} />
+            <AddNameForm onNameAdded={refreshStats} />
+            <DrawName onDrawn={refreshStats} />
           </>
         ) : (
           <NameList refreshKey={refreshKey} />

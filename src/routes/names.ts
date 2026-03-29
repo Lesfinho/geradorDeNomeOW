@@ -1,24 +1,21 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
+import { authMiddleware } from "../auth";
 
 export const nameRouter = Router();
 
-nameRouter.post("/", async (req, res) => {
+nameRouter.post("/", authMiddleware, async (req, res) => {
   try {
-    const { name, userId } = req.body;
+    const user = (req as any).user;
+    const { name } = req.body;
 
     if (!name || name.trim().length === 0) {
       res.status(400).json({ error: "Nome é obrigatório" });
       return;
     }
 
-    if (!userId) {
-      res.status(400).json({ error: "userId é obrigatório" });
-      return;
-    }
-
     const entry = await prisma.nameEntry.create({
-      data: { name: name.trim(), addedById: userId },
+      data: { name: name.trim(), addedById: user.id },
       include: { addedBy: true },
     });
 
@@ -35,14 +32,9 @@ nameRouter.post("/", async (req, res) => {
   }
 });
 
-nameRouter.post("/draw", async (req, res) => {
+nameRouter.post("/draw", authMiddleware, async (req, res) => {
   try {
-    const { userId } = req.body;
-
-    if (!userId) {
-      res.status(400).json({ error: "userId é obrigatório" });
-      return;
-    }
+    const user = (req as any).user;
 
     const result = await prisma.$queryRawUnsafe<Array<{ id: number }>>(
       `UPDATE name_entry SET "isUsed" = true, "drawnById" = $1
@@ -50,7 +42,7 @@ nameRouter.post("/draw", async (req, res) => {
          SELECT id FROM name_entry WHERE "isUsed" = false
          ORDER BY RANDOM() LIMIT 1 FOR UPDATE SKIP LOCKED
        ) RETURNING id`,
-      userId
+      user.id
     );
 
     if (!result || result.length === 0) {
@@ -79,7 +71,7 @@ nameRouter.post("/draw", async (req, res) => {
   }
 });
 
-nameRouter.get("/all", async (_req, res) => {
+nameRouter.get("/all", authMiddleware, async (_req, res) => {
   try {
     const entries = await prisma.nameEntry.findMany({
       include: { addedBy: true, drawnBy: true },
