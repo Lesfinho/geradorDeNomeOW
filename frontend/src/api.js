@@ -13,6 +13,17 @@ function authHeaders() {
   return headers;
 }
 
+export async function resetPin(username, secret) {
+  const res = await fetch(`${BASE}/users/reset-pin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, secret })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao resetar PIN');
+  return data;
+}
+
 export async function register(username, pin) {
   const res = await fetch(`${BASE}/users/register`, {
     method: 'POST',

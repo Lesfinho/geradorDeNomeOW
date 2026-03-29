@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../prisma";
 import { authMiddleware } from "../auth";
+import { notify } from "../discord";
 
 export const nameRouter = Router();
 
@@ -54,6 +55,8 @@ nameRouter.post("/draw", authMiddleware, async (req, res) => {
       where: { id: result[0].id },
       include: { addedBy: true, drawnBy: true },
     });
+
+    await notify(`🎲 **${user.username}** sorteou o nome **${entry!.name}**!`);
 
     res.json({
       name: {
