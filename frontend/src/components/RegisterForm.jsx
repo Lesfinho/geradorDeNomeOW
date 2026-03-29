@@ -97,7 +97,7 @@ export default function RegisterForm({ onRegister }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950">
       <form onSubmit={handleSubmit} className="bg-gray-900 border border-gray-700 p-8 rounded-lg shadow-2xl w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">ResenhaGenerator</h1>
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">Resenha Ow</h1>
         <input
           type="text"
           value={username}
