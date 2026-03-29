@@ -26,7 +26,8 @@
       "Bash(DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/nomegenerator\" npx prisma generate)",
       "Bash(DATABASE_URL=\"postgresql://postgres:postgres@localhost:5432/nomegenerator\" npx prisma db push --force-reset 2>&1)",
       "Bash(PGPASSWORD=postgres \"/c/Program Files/PostgreSQL/13/bin/psql\" -h localhost -U postgres -d nomegenerator -c \"\\\\d name_entry\" 2>&1)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git push:*)"
     ]
   }
 }
