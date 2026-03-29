@@ -6,10 +6,15 @@ export const userRouter = Router();
 
 userRouter.post("/register", async (req, res) => {
   try {
-    const { username } = req.body;
+    const { username, pin } = req.body;
 
     if (!username || username.trim().length < 2 || username.trim().length > 50) {
       res.status(400).json({ error: "Username deve ter entre 2 e 50 caracteres" });
+      return;
+    }
+
+    if (!pin || !/^\d{4}$/.test(pin)) {
+      res.status(400).json({ error: "PIN deve ter exatamente 4 dígitos" });
       return;
     }
 
@@ -18,7 +23,11 @@ userRouter.post("/register", async (req, res) => {
     });
 
     if (existing) {
-      // Gera novo token ao "logar" de novo
+      if (existing.pin !== pin) {
+        res.status(401).json({ error: "PIN incorreto" });
+        return;
+      }
+
       const updated = await prisma.appUser.update({
         where: { id: existing.id },
         data: { token: generateToken() },
@@ -32,7 +41,7 @@ userRouter.post("/register", async (req, res) => {
     }
 
     const user = await prisma.appUser.create({
-      data: { username: username.trim(), token: generateToken() },
+      data: { username: username.trim(), pin, token: generateToken() },
     });
 
     res.json({

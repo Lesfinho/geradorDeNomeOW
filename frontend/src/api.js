@@ -13,14 +13,15 @@ function authHeaders() {
   return headers;
 }
 
-export async function register(username) {
+export async function register(username, pin) {
   const res = await fetch(`${BASE}/users/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username })
+    body: JSON.stringify({ username, pin })
   });
-  if (!res.ok) throw new Error('Erro ao registrar');
-  return res.json();
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erro ao registrar');
+  return data;
 }
 
 export async function addName(name) {

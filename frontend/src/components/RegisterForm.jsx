@@ -3,6 +3,7 @@ import { register } from '../api';
 
 export default function RegisterForm({ onRegister }) {
   const [username, setUsername] = useState('');
+  const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -11,13 +12,10 @@ export default function RegisterForm({ onRegister }) {
     setError('');
     setLoading(true);
     try {
-      const data = await register(username.trim());
-      if (data.alreadyExisted) {
-        setError('Esse username já existe! Entrando como usuário existente.');
-      }
+      const data = await register(username.trim(), pin);
       onRegister(data.user);
-    } catch {
-      setError('Erro ao registrar. Tente novamente.');
+    } catch (err) {
+      setError(err.message || 'Erro ao entrar. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -26,7 +24,7 @@ export default function RegisterForm({ onRegister }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Nome Generator</h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">ResenhaGenerator</h1>
         <input
           type="text"
           value={username}
@@ -37,12 +35,26 @@ export default function RegisterForm({ onRegister }) {
           maxLength={50}
           required
         />
+        <input
+          type="text"
+          inputMode="numeric"
+          pattern="\d{4}"
+          value={pin}
+          onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+          placeholder="PIN de 4 dígitos"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 text-center tracking-widest text-lg"
+          maxLength={4}
+          required
+        />
+        <p className="text-xs text-gray-400 mb-4 text-center">
+          Novo? Escolha um PIN. Já tem conta? Digite seu PIN.
+        </p>
         {error && (
-          <p className="text-amber-600 text-sm mb-4">{error}</p>
+          <p className="text-red-500 text-sm mb-4">{error}</p>
         )}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || pin.length !== 4}
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
         >
           {loading ? 'Entrando...' : 'Entrar'}
