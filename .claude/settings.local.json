@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(docker ps:*)",
+      "Bash(where psql:*)",
+      "Bash(\"/c/Program Files/PostgreSQL/13/bin/pg_isready\" -h localhost -p 5432 2>&1)",
+      "Bash(\"/c/Program Files/PostgreSQL/13/bin/psql\" -h localhost -p 5432 -U postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'nomegenerator'\" 2>&1)",
+      "Bash(\"/c/Program Files/PostgreSQL/13/bin/pg_ctl\" reload -D \"/c/Program Files/PostgreSQL/13/data\" 2>&1)",
+      "Bash(sc query:*)",
+      "Bash(powershell -Command 'Get-Service *postgres*')",
+      "Bash(\"/c/Program Files/PostgreSQL/13/bin/psql\" -h localhost -U postgres -tc \"SELECT 1\" 2>&1)",
+      "Bash(\"/c/Program Files/PostgreSQL/13/bin/psql\" -h localhost -U postgres -c \"CREATE DATABASE nomegenerator;\" 2>&1)",
+      "Bash(\"/c/Program Files/PostgreSQL/13/bin/psql\" -h localhost -U postgres -c \"ALTER USER postgres PASSWORD 'postgres';\" 2>&1)",
+      "Bash(npm run:*)",
+      "Bash(PGPASSWORD=postgres \"/c/Program Files/PostgreSQL/13/bin/psql\" -h localhost -U postgres -d nomegenerator -tc \"SELECT 1\" 2>&1)",
+      "Bash(./mvnw spring-boot:run)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

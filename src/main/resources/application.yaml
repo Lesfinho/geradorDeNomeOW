@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: nomegenerator
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/nomegenerator}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+server:
+  port: ${PORT:8080}
