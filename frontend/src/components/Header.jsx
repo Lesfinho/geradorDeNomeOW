@@ -1,14 +1,14 @@
 export default function Header({ user, onLogout }) {
   return (
-    <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700 bg-gray-900/80 backdrop-blur">
-      <h1 className="text-xl font-bold text-white">Resenha Ow</h1>
+    <header className="glass-card-sm mx-4 mt-4 px-5 py-3 flex items-center justify-between">
+      <h1 className="text-lg font-bold text-white tracking-tight">Resenha Ow</h1>
       <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-400">
-          Logado como <strong className="text-white">{user.username}</strong>
+        <span className="text-xs text-white/50">
+          <strong className="text-white/80">{user.username}</strong>
         </span>
         <button
           onClick={onLogout}
-          className="text-sm text-red-400 hover:text-red-300 cursor-pointer"
+          className="text-xs text-amber-400/70 hover:text-amber-400 cursor-pointer transition-colors"
         >
           Sair
         </button>

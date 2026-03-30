@@ -6,12 +6,13 @@ export default function GifBackground({ children, customGif, onChangeGif }) {
   const [defaultGif, setDefaultGif] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [inputVal, setInputVal] = useState('');
+  const [useGif, setUseGif] = useState(() => localStorage.getItem('useGifBg') === 'true');
 
   useEffect(() => {
     setDefaultGif(getRandomGif());
   }, []);
 
-  const activeGif = customGif || defaultGif;
+  const activeGif = useGif ? (customGif || defaultGif) : '';
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,6 +20,8 @@ export default function GifBackground({ children, customGif, onChangeGif }) {
     const url = inputVal.trim();
     if (url) {
       onChangeGif(url);
+      setUseGif(true);
+      localStorage.setItem('useGifBg', 'true');
     }
     setInputVal('');
     setShowInput(false);
@@ -28,56 +31,76 @@ export default function GifBackground({ children, customGif, onChangeGif }) {
     playClick();
     onChangeGif('');
     setDefaultGif(getRandomGif());
-    setShowInput(false);
+  };
+
+  const toggleGif = () => {
+    playClick();
+    const next = !useGif;
+    setUseGif(next);
+    localStorage.setItem('useGifBg', String(next));
   };
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative animated-bg">
+      {/* Animated orbs */}
+      {!activeGif && (
+        <>
+          <div className="orb orb-1" />
+          <div className="orb orb-2" />
+          <div className="orb orb-3" />
+        </>
+      )}
+
+      {/* GIF overlay */}
       {activeGif && (
         <>
           <div
-            className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-20"
-            style={{ backgroundImage: `url(${activeGif})` }}
+            className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${activeGif})`, zIndex: -20 }}
           />
-          <div className="fixed inset-0 bg-black/60 -z-10" />
+          <div className="fixed inset-0 bg-black/50" style={{ zIndex: -10 }} />
         </>
       )}
-      {!activeGif && <div className="fixed inset-0 bg-gray-900 -z-10" />}
 
-      {/* GIF control button */}
+      {/* GIF control */}
       <button
         onClick={() => { playClick(); setShowInput(!showInput); }}
-        className="fixed bottom-4 right-4 z-40 bg-gray-900/80 backdrop-blur text-gray-400 hover:text-white p-2 rounded-full border border-gray-700 hover:border-gray-500 transition-all cursor-pointer text-lg"
-        title="Trocar GIF de fundo"
+        className="fixed bottom-4 right-4 z-40 glass-card-sm p-2.5 cursor-pointer text-white/60 hover:text-white transition-all"
+        title="Trocar fundo"
       >
         🎬
       </button>
 
       {showInput && (
-        <div className="fixed bottom-14 right-4 z-40 bg-gray-900/95 backdrop-blur border border-gray-700 rounded-lg p-3 w-72 shadow-2xl">
-          <p className="text-xs text-gray-400 mb-2">Cole a URL de um GIF:</p>
+        <div className="fixed bottom-14 right-4 z-40 glass-card p-4 w-72 animate-float-in">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs text-white/50 font-medium">Fundo</p>
+            <button
+              onClick={toggleGif}
+              className={`text-xs pill-btn px-3 py-1 ${useGif ? 'pill-btn-amber' : 'pill-btn-glass'}`}
+            >
+              {useGif ? 'GIF ON' : 'GIF OFF'}
+            </button>
+          </div>
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               type="url"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              placeholder="https://media.tenor.com/..."
-              className="flex-1 px-3 py-1.5 bg-gray-800 border border-gray-600 text-white text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+              placeholder="Cole URL do GIF..."
+              className="glass-input flex-1 px-3 py-1.5 text-sm"
               autoFocus
             />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-blue-700 cursor-pointer"
-            >
+            <button type="submit" className="pill-btn pill-btn-amber px-3 py-1.5 text-sm">
               OK
             </button>
           </form>
           {customGif && (
             <button
               onClick={handleReset}
-              className="text-xs text-red-400 hover:text-red-300 mt-2 cursor-pointer"
+              className="text-xs text-amber-400/70 hover:text-amber-400 mt-2 cursor-pointer"
             >
-              Resetar para aleatorio
+              Aleatorio
             </button>
           )}
         </div>

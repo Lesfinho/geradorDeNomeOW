@@ -76,16 +76,16 @@ function App() {
   return (
     <GifBackground customGif={customGif} onChangeGif={handleSetGif}>
       <Header user={user} onLogout={handleLogout} />
-      <div className="max-w-2xl mx-auto px-6 mt-4">
+      <div className="max-w-2xl mx-auto px-4 mt-4">
         <div className="flex gap-2 mb-4 justify-center">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => { playClick(); setTab(t.id); }}
-              className={`px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all ${
+              className={`pill-btn px-4 py-2 text-sm ${
                 tab === t.id
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/40'
-                  : 'bg-gray-900/80 text-gray-300 hover:bg-gray-800 hover:scale-105'
+                  ? 'pill-btn-glass active'
+                  : 'pill-btn-glass'
               }`}
             >
               {t.label}
@@ -93,7 +93,7 @@ function App() {
           ))}
         </div>
       </div>
-      <main className="max-w-2xl mx-auto px-6 pb-6 space-y-4">
+      <main className="max-w-2xl mx-auto px-4 pb-6 space-y-3">
         {tab === 'main' && (
           <>
             <PoolStats stats={stats} />

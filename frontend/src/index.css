@@ -1,5 +1,175 @@
 @import "tailwindcss";
 
+/* ── iOS 26 Liquid Glass Design System ── */
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.25);
+  --amber-glow: rgba(245, 193, 60, 0.4);
+  --amber-solid: #f5c13c;
+  --amber-dark: #d4a632;
+  --text-primary: #f5f5f5;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Animated mesh gradient background ── */
+@keyframes mesh-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+}
+
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30vw, -20vh) scale(1.2); }
+  66% { transform: translate(-10vw, 15vh) scale(0.9); }
+}
+
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-25vw, 25vh) scale(1.1); }
+  66% { transform: translate(20vw, -10vh) scale(0.8); }
+}
+
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15vw, 20vh) scale(1.3); }
+  66% { transform: translate(-20vw, -15vh) scale(0.85); }
+}
+
+.animated-bg {
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+  background-size: 400% 400%;
+  animation: mesh-shift 20s ease infinite;
+}
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.orb-1 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, var(--amber-glow), transparent 70%);
+  top: 10%; left: 10%;
+  animation: orb-float-1 25s ease-in-out infinite;
+}
+
+.orb-2 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
+  top: 50%; right: 5%;
+  animation: orb-float-2 30s ease-in-out infinite;
+}
+
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(245, 193, 60, 0.25), transparent 70%);
+  bottom: 10%; left: 40%;
+  animation: orb-float-3 22s ease-in-out infinite;
+}
+
+/* ── Liquid Glass Card ── */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
+.glass-card-sm {
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 var(--glass-highlight);
+}
+
+/* ── iOS pill button ── */
+.pill-btn {
+  border-radius: 100px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.pill-btn:active {
+  transform: scale(0.96);
+}
+
+.pill-btn-amber {
+  background: linear-gradient(135deg, var(--amber-solid), var(--amber-dark));
+  color: #1a1a2e;
+  box-shadow: 0 4px 20px var(--amber-glow);
+}
+
+.pill-btn-amber:hover {
+  box-shadow: 0 6px 28px rgba(245, 193, 60, 0.55);
+  transform: translateY(-1px);
+}
+
+.pill-btn-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+}
+
+.pill-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.pill-btn-glass.active {
+  background: rgba(245, 193, 60, 0.2);
+  border-color: rgba(245, 193, 60, 0.4);
+  color: var(--amber-solid);
+}
+
+/* ── Glass input ── */
+.glass-input {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.glass-input::placeholder {
+  color: var(--text-muted);
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: rgba(245, 193, 60, 0.5);
+  box-shadow: 0 0 0 3px rgba(245, 193, 60, 0.15);
+}
+
+/* ── Animations ── */
 @keyframes confetti-fall {
   0% {
     transform: translateY(0) translateX(0) rotate(0deg);
@@ -19,14 +189,14 @@
 }
 
 @keyframes reveal-glow {
-  0% { text-shadow: 0 0 10px rgba(168,85,247,0.5); transform: scale(0.8); opacity: 0; }
-  50% { text-shadow: 0 0 30px rgba(168,85,247,0.8), 0 0 60px rgba(168,85,247,0.4); transform: scale(1.1); }
-  100% { text-shadow: 0 0 15px rgba(168,85,247,0.6); transform: scale(1); opacity: 1; }
+  0% { text-shadow: 0 0 10px var(--amber-glow); transform: scale(0.8); opacity: 0; }
+  50% { text-shadow: 0 0 30px rgba(245,193,60,0.8), 0 0 60px var(--amber-glow); transform: scale(1.1); }
+  100% { text-shadow: 0 0 15px rgba(245,193,60,0.6); transform: scale(1); opacity: 1; }
 }
 
-@keyframes pulse-border {
-  0%, 100% { border-color: rgba(168,85,247,0.3); }
-  50% { border-color: rgba(168,85,247,0.8); }
+@keyframes float-in {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .animate-confetti-fall {
@@ -41,6 +211,6 @@
   animation: reveal-glow 0.6s ease-out forwards;
 }
 
-.animate-pulse-border {
-  animation: pulse-border 1.5s ease-in-out infinite;
+.animate-float-in {
+  animation: float-in 0.4s ease-out forwards;
 }

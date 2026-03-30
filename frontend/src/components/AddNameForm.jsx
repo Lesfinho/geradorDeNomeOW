@@ -26,23 +26,23 @@ export default function AddNameForm({ onNameAdded }) {
   };
 
   return (
-    <div className="bg-gray-900/80 backdrop-blur p-4 rounded-lg border border-gray-700">
+    <div className="glass-card-sm p-4">
       <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3">
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Digite um nome (max 12 chars)"
-          className="w-full max-w-xs px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-full text-center focus:outline-none focus:ring-2 focus:ring-green-500 placeholder-gray-500"
+          className="glass-input w-full max-w-xs px-4 py-2.5 text-center text-sm"
           maxLength={12}
           required
         />
         <button
           type="submit"
           disabled={loading}
-          className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2 rounded-full font-semibold hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-900/40 flex items-center gap-2"
+          className="pill-btn pill-btn-amber px-6 py-2.5 text-sm flex items-center gap-2 disabled:opacity-50"
         >
-          <span className="text-lg">+</span>
+          <span className="text-base">+</span>
           {loading ? 'Adicionando...' : 'Adicionar ao Pool'}
         </button>
       </form>

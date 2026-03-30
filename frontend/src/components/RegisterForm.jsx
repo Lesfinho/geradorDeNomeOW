@@ -44,10 +44,12 @@ export default function RegisterForm({ onRegister }) {
 
   if (showReset) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-950">
-        <form onSubmit={handleReset} className="bg-gray-900 border border-gray-700 p-8 rounded-lg shadow-2xl w-full max-w-sm">
+      <div className="min-h-screen flex items-center justify-center animated-bg relative">
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <form onSubmit={handleReset} className="glass-card p-8 w-full max-w-sm mx-4 animate-float-in">
           <h1 className="text-2xl font-bold text-white mb-2 text-center">Resetar PIN</h1>
-          <p className="text-xs text-gray-500 mb-6 text-center">
+          <p className="text-xs text-white/40 mb-6 text-center">
             Digite seu username e a senha do grupo
           </p>
           <input
@@ -55,7 +57,7 @@ export default function RegisterForm({ onRegister }) {
             value={resetUsername}
             onChange={(e) => setResetUsername(e.target.value)}
             placeholder="Seu username"
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 mb-4 placeholder-gray-500"
+            className="glass-input w-full px-4 py-3 mb-4"
             required
           />
           <input
@@ -63,13 +65,13 @@ export default function RegisterForm({ onRegister }) {
             value={secret}
             onChange={(e) => setSecret(e.target.value)}
             placeholder="Senha do grupo"
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 mb-4 placeholder-gray-500"
+            className="glass-input w-full px-4 py-3 mb-4"
             required
           />
           {resetResult && (
-            <div className="bg-green-900/50 border border-green-700 rounded-md p-3 mb-4 text-center">
+            <div className="bg-green-500/15 border border-green-500/30 rounded-2xl p-3 mb-4 text-center">
               <p className="text-green-400 font-bold text-lg">{resetResult}</p>
-              <p className="text-xs text-green-500 mt-1">Anote e use para entrar!</p>
+              <p className="text-xs text-green-400/60 mt-1">Anote e use para entrar!</p>
             </div>
           )}
           {resetError && (
@@ -78,14 +80,14 @@ export default function RegisterForm({ onRegister }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-orange-600 text-white py-2 rounded-md hover:bg-orange-700 disabled:opacity-50 cursor-pointer mb-3"
+            className="w-full pill-btn pill-btn-amber py-3 text-base disabled:opacity-50 mb-3"
           >
             {loading ? 'Resetando...' : 'Resetar PIN'}
           </button>
           <button
             type="button"
             onClick={() => { setShowReset(false); setResetResult(''); setResetError(''); }}
-            className="w-full text-sm text-gray-500 hover:text-gray-300 cursor-pointer"
+            className="w-full text-sm text-white/30 hover:text-white/60 cursor-pointer"
           >
             Voltar ao login
           </button>
@@ -95,15 +97,17 @@ export default function RegisterForm({ onRegister }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950">
-      <form onSubmit={handleSubmit} className="bg-gray-900 border border-gray-700 p-8 rounded-lg shadow-2xl w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">Resenha Ow</h1>
+    <div className="min-h-screen flex items-center justify-center animated-bg relative">
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <form onSubmit={handleSubmit} className="glass-card p-8 w-full max-w-sm mx-4 animate-float-in">
+        <h1 className="text-2xl font-bold text-white mb-6 text-center tracking-tight">Resenha Ow</h1>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="Insira seu nome"
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 placeholder-gray-500"
+          className="glass-input w-full px-4 py-3 mb-4"
           minLength={2}
           maxLength={50}
           required
@@ -115,12 +119,12 @@ export default function RegisterForm({ onRegister }) {
           value={pin}
           onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
           placeholder="PIN"
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 text-center tracking-widest text-lg placeholder-gray-500"
+          className="glass-input w-full px-4 py-3 mb-4 text-center tracking-widest text-lg"
           maxLength={4}
           required
         />
-        <p className="text-xs text-gray-500 mb-4 text-center">
-          Novo? Escolha um PIN. Já tem conta? Digite seu PIN.
+        <p className="text-xs text-white/30 mb-4 text-center">
+          Novo? Escolha um PIN. Ja tem conta? Digite seu PIN.
         </p>
         {error && (
           <p className="text-red-400 text-sm mb-4">{error}</p>
@@ -128,14 +132,14 @@ export default function RegisterForm({ onRegister }) {
         <button
           type="submit"
           disabled={loading || pin.length !== 4}
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 cursor-pointer mb-3"
+          className="w-full pill-btn pill-btn-amber py-3 text-base disabled:opacity-50 mb-3"
         >
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
         <button
           type="button"
           onClick={() => setShowReset(true)}
-          className="w-full text-sm text-gray-600 hover:text-gray-400 cursor-pointer"
+          className="w-full text-sm text-white/20 hover:text-white/50 cursor-pointer"
         >
           Esqueci meu PIN
         </button>

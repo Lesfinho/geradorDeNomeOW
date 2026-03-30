@@ -10,7 +10,7 @@ const FAKE_NAMES = [
 
 export default function DrawName({ onDrawn }) {
   const [result, setResult] = useState(null);
-  const [phase, setPhase] = useState('idle'); // idle | spinning | reveal
+  const [phase, setPhase] = useState('idle');
   const [slotText, setSlotText] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
   const intervalRef = useRef(null);
@@ -27,14 +27,12 @@ export default function DrawName({ onDrawn }) {
     setShowConfetti(false);
     playCasinoSpin();
 
-    // Start slot machine text cycling
     let tick = 0;
     intervalRef.current = setInterval(() => {
       setSlotText(FAKE_NAMES[tick % FAKE_NAMES.length]);
       tick++;
     }, 100);
 
-    // Fetch while spinning
     let data;
     try {
       data = await drawName();
@@ -42,19 +40,16 @@ export default function DrawName({ onDrawn }) {
       data = { error: true };
     }
 
-    // Keep spinning for dramatic effect (total ~2.5s)
     await new Promise((r) => setTimeout(r, 2000));
 
     clearInterval(intervalRef.current);
     intervalRef.current = null;
 
-    // Slow down effect
     for (let i = 0; i < 5; i++) {
       await new Promise((r) => setTimeout(r, 150 + i * 100));
       setSlotText(FAKE_NAMES[Math.floor(Math.random() * FAKE_NAMES.length)]);
     }
 
-    // Reveal
     setResult(data);
     setPhase('reveal');
 
@@ -70,20 +65,19 @@ export default function DrawName({ onDrawn }) {
   return (
     <>
       <Confetti active={showConfetti} />
-      <div className="bg-gray-900/80 backdrop-blur p-4 rounded-lg border border-gray-700 text-center">
-        <h2 className="text-sm font-semibold text-purple-300 mb-3 uppercase tracking-widest">
+      <div className="glass-card-sm p-4 text-center">
+        <h2 className="text-xs font-semibold text-amber-400/80 mb-3 uppercase tracking-widest">
           Sua nova conta chama...
         </h2>
 
-        {/* Slot display */}
         <div className="min-h-[60px] flex items-center justify-center mb-3">
           {phase === 'idle' && !result && (
-            <p className="text-gray-600 text-lg">Clique para descobrir!</p>
+            <p className="text-white/20 text-sm">Clique para descobrir!</p>
           )}
 
           {phase === 'spinning' && (
             <div className="overflow-hidden h-[50px] flex items-center justify-center">
-              <p className="text-3xl font-bold text-purple-400 animate-slot-spin font-mono">
+              <p className="text-3xl font-bold text-amber-400 animate-slot-spin font-mono">
                 {slotText}
               </p>
             </div>
@@ -94,13 +88,13 @@ export default function DrawName({ onDrawn }) {
               {result.error ? (
                 <p className="text-red-400">Erro ao sortear.</p>
               ) : result.empty ? (
-                <p className="text-gray-400 text-lg">Nenhum nome disponivel no pool!</p>
+                <p className="text-white/40 text-sm">Nenhum nome disponivel no pool!</p>
               ) : (
                 <div className="animate-reveal-glow">
-                  <p className="text-4xl font-bold text-purple-400 mb-1">
+                  <p className="text-4xl font-bold text-amber-400 mb-1">
                     {result.name.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-white/30">
                     adicionado por {result.name.addedBy}
                   </p>
                 </div>
@@ -112,7 +106,7 @@ export default function DrawName({ onDrawn }) {
         <button
           onClick={handleDraw}
           disabled={phase === 'spinning'}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-full text-lg font-bold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 cursor-pointer transition-all hover:scale-105 active:scale-95 shadow-lg shadow-purple-900/50"
+          className="pill-btn pill-btn-amber px-8 py-3 text-lg font-bold disabled:opacity-50"
         >
           {phase === 'spinning' ? 'Sorteando...' : 'RETIRAR'}
         </button>
