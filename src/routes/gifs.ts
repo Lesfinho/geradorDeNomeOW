@@ -6,10 +6,26 @@ export const gifRouter = Router();
 const prismaClient = prisma as any;
 
 function isAllowedGifUrl(url: string): boolean {
-  return (
-    url.includes("media.discordapp.net") ||
-    url.includes("cdn.discordapp.com/attachments/")
-  );
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    const path = parsed.pathname.toLowerCase();
+    const allowedHosts = [
+      "media.discordapp.net",
+      "cdn.discordapp.com",
+      "i.imgur.com",
+      "media.tenor.com",
+      "c.tenor.com",
+      "media.giphy.com",
+      "i.giphy.com",
+    ];
+
+    const hostAllowed = allowedHosts.some((item) => host === item || host.endsWith(`.${item}`));
+    const hasImageExt = /\.(gif|webp|png|jpe?g)$/i.test(path);
+    return hostAllowed && (hasImageExt || host.includes("discordapp.com"));
+  } catch {
+    return false;
+  }
 }
 
 gifRouter.post("/", authMiddleware, async (req, res) => {
@@ -25,7 +41,7 @@ gifRouter.post("/", authMiddleware, async (req, res) => {
     const cleanUrl = url.trim();
     if (!isAllowedGifUrl(cleanUrl)) {
       res.status(400).json({
-        error: "Aceita apenas gifs que tem 'media.discordapp.net' ou 'cdn.discordapp.com/attachments/'",
+        error: "URL invalida. Use links diretos de Discord, Imgur, Tenor ou Giphy.",
       });
       return;
     }

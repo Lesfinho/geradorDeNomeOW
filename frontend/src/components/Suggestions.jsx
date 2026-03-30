@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { getSuggestions } from '../api';
-import { playClick } from '../sounds';
+import { playCasinoSpin, playClick } from '../sounds';
 
 const FAKE_SUGGESTIONS = ['??????', 'ROLANDO', 'SORTEIO', 'ALEATORIO', 'COUPLE?', 'NOME??'];
 
@@ -19,6 +19,7 @@ export default function Suggestions() {
 
   const handleGenerate = async () => {
     playClick();
+    playCasinoSpin();
     setLoading(true);
     setActiveTab('normal');
 
@@ -122,15 +123,14 @@ export default function Suggestions() {
           {coupleSuggestions.map((item, i) => (
             <div key={`${item.name}-${i}`} className="bg-amber-400/10 border border-amber-400/15 p-3 rounded-2xl">
               <div className="flex flex-col items-center gap-2">
-                <span className="font-medium text-amber-300">{item.name}</span>
+                <span className="font-medium text-amber-300">{item.pair}</span>
                 <button
-                  onClick={() => handleUseSuggestion(item.name)}
+                  onClick={() => handleUseSuggestion(item.pair)}
                   className="pill-btn pill-btn-glass text-xs px-3 py-1"
                 >
                   Copiar
                 </button>
               </div>
-              <p className="text-xs text-white/50 mt-1">Couple: {item.pair}</p>
             </div>
           ))}
         </div>

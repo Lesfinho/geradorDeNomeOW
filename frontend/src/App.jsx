@@ -90,7 +90,7 @@ function App() {
         </div>
 
         <div className={`flex-1 flex justify-center px-4 py-6 ${tab === 'suggest' ? 'items-start pt-2' : 'items-center'}`}>
-          <div className="w-full max-w-2xl">
+          <div className={`w-full ${tab === 'list' ? 'max-w-6xl' : 'max-w-2xl'}`}>
             <main className="space-y-3">
               {tab === 'main' && (
                 <>

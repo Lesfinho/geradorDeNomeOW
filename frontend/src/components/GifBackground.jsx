@@ -12,6 +12,30 @@ function getRandomGif() {
   return fallbackGifs[Math.floor(Math.random() * fallbackGifs.length)] || '';
 }
 
+function isAllowedGifUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
+    const path = parsed.pathname.toLowerCase();
+    const allowedHosts = [
+      'media.discordapp.net',
+      'cdn.discordapp.com',
+      'i.imgur.com',
+      'media.tenor.com',
+      'c.tenor.com',
+      'media.giphy.com',
+      'i.giphy.com',
+    ];
+
+    const hostAllowed = allowedHosts.some((item) => host === item || host.endsWith(`.${item}`));
+    const hasImageExt = /\.(gif|webp|png|jpe?g)$/i.test(path);
+
+    return hostAllowed && (hasImageExt || host.includes('discordapp.com'));
+  } catch {
+    return false;
+  }
+}
+
 function createRandomPalette() {
   const hue = Math.floor(Math.random() * 360);
   const bgHue = (hue + 210) % 360;
@@ -49,6 +73,7 @@ function applyAccentPalette(palette) {
 
 export default function GifBackground({ children, customGif, onChangeGif }) {
   const [defaultGif, setDefaultGif] = useState('');
+  const [renderGif, setRenderGif] = useState('');
   const [showInput, setShowInput] = useState(false);
   const [inputVal, setInputVal] = useState('');
   const [gifError, setGifError] = useState('');
@@ -67,15 +92,77 @@ export default function GifBackground({ children, customGif, onChangeGif }) {
     }
   }, []);
 
-  const activeGif = useGif ? (customGif || defaultGif) : '';
+  useEffect(() => {
+    if (!useGif || customGif) return;
+
+    let cancelled = false;
+    getRandomSharedGif()
+      .then((result) => {
+        if (!cancelled && result?.url) {
+          onChangeGif(result.url);
+        }
+      })
+      .catch(() => {
+        // ignore and keep fallback behavior
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [useGif, customGif, onChangeGif]);
+
+  useEffect(() => {
+    if (!useGif) {
+      setRenderGif('');
+      return;
+    }
+
+    const candidate = (customGif || defaultGif || getRandomGif()).trim();
+    if (!candidate) {
+      setRenderGif('');
+      return;
+    }
+
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      if (!cancelled) setRenderGif(candidate);
+    };
+    img.onerror = () => {
+      const fallback = getRandomGif();
+      if (!fallback || fallback === candidate) {
+        if (!cancelled) setRenderGif('');
+        return;
+      }
+
+      const fallbackImg = new Image();
+      fallbackImg.onload = () => {
+        if (!cancelled) {
+          setDefaultGif(fallback);
+          setRenderGif(fallback);
+        }
+      };
+      fallbackImg.onerror = () => {
+        if (!cancelled) setRenderGif('');
+      };
+      fallbackImg.src = fallback;
+    };
+    img.src = candidate;
+
+    return () => {
+      cancelled = true;
+    };
+  }, [customGif, defaultGif, useGif]);
+
+  const activeGif = renderGif;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     playClick();
     const url = inputVal.trim();
-    const allowed = url.includes('media.discordapp.net') || url.includes('cdn.discordapp.com/attachments/');
+    const allowed = isAllowedGifUrl(url);
     if (!allowed) {
-      setGifError("Aceita apenas gifs que tem 'media.discordapp.net' ou 'cdn.discordapp.com/attachments/'");
+      setGifError('URL invalida. Use links diretos de Discord, Imgur, Tenor ou Giphy.');
       return;
     }
 
@@ -190,7 +277,7 @@ export default function GifBackground({ children, customGif, onChangeGif }) {
             </button>
           </form>
           <p className="text-[11px] text-amber-300/80 mt-2">
-            Aceita apenas gifs que tem 'media.discordapp.net' ou 'cdn.discordapp.com/attachments/'
+            Aceita links diretos de Discord, Imgur, Tenor ou Giphy
           </p>
           {gifError && (
             <p className="text-[11px] text-red-300 mt-1">{gifError}</p>

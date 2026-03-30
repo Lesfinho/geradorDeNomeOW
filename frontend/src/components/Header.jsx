@@ -1,7 +1,7 @@
 export default function Header({ user, onLogout }) {
   return (
     <header className="glass-card-sm px-5 py-3 flex items-center justify-between">
-      <h1 className="text-lg font-bold text-white tracking-tight">Resenha Ow</h1>
+      <h1 className="text-lg font-bold text-white tracking-tight">resenhaOW</h1>
       <div className="flex items-center gap-3">
         <span className="text-xs text-white/50">
           <strong className="text-white/80">{user.username}</strong>

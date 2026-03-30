@@ -101,36 +101,73 @@ function affixGenerate(names: string[], prefixes: string[], suffixes: string[]):
   return null;
 }
 
-// --- Couple name blender ---
-function coupleGenerate(names: string[]): CoupleSuggestion | null {
+// --- Couple by repeated affix (prefix OR suffix) ---
+function buildWithRepeatedSuffix(donor: string, suffix: string): string | null {
+  const lower = donor.toLowerCase();
+  if (lower.length < MIN_LEN) return null;
+
+  const maxCut = Math.max(1, lower.length - 1);
+  const cutPoint = Math.min(maxCut, Math.max(1, Math.floor(Math.random() * maxCut) + 1));
+  const base = lower.slice(0, cutPoint);
+  const result = (base + suffix).slice(0, MAX_LEN);
+
+  if (result.length < MIN_LEN) return null;
+  return result;
+}
+
+function buildWithRepeatedPrefix(donor: string, prefix: string): string | null {
+  const lower = donor.toLowerCase();
+  if (lower.length < MIN_LEN) return null;
+
+  const maxStart = Math.max(0, lower.length - MIN_LEN);
+  const start = Math.floor(Math.random() * (maxStart + 1));
+  const tail = lower.slice(start);
+  const result = (prefix + tail).slice(0, MAX_LEN);
+
+  if (result.length < MIN_LEN) return null;
+  return result;
+}
+
+function coupleGenerateByAffix(names: string[], prefixes: string[], suffixes: string[]): CoupleSuggestion | null {
   if (names.length < 2) return null;
-  const indexA = Math.floor(Math.random() * names.length);
-  let indexB = Math.floor(Math.random() * names.length);
-  let attempts = 0;
-  while (indexB === indexA && attempts++ < 10) {
-    indexB = Math.floor(Math.random() * names.length);
+
+  const canUseSuffix = suffixes.length > 0;
+  const canUsePrefix = prefixes.length > 0;
+  if (!canUseSuffix && !canUsePrefix) return null;
+
+  const useSuffix = canUseSuffix && (!canUsePrefix || Math.random() < 0.5);
+  const donors = names.map((n) => n.toLowerCase());
+
+  if (useSuffix) {
+    const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+    const donorA = donors[Math.floor(Math.random() * donors.length)];
+    const donorB = donors[Math.floor(Math.random() * donors.length)];
+    const rawA = buildWithRepeatedSuffix(donorA, suffix);
+    const rawB = buildWithRepeatedSuffix(donorB, suffix);
+    if (!rawA || !rawB) return null;
+
+    const first = capitalize(rawA);
+    const second = capitalize(rawB);
+    const pair = `${first} + ${second}`;
+    return {
+      name: pair,
+      pair,
+    };
   }
-  if (indexA === indexB) return null;
 
-  const firstOriginal = names[indexA];
-  const secondOriginal = names[indexB];
-  const a = firstOriginal.toLowerCase();
-  const b = secondOriginal.toLowerCase();
+  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+  const donorA = donors[Math.floor(Math.random() * donors.length)];
+  const donorB = donors[Math.floor(Math.random() * donors.length)];
+  const rawA = buildWithRepeatedPrefix(donorA, prefix);
+  const rawB = buildWithRepeatedPrefix(donorB, prefix);
+  if (!rawA || !rawB) return null;
 
-  const cutA = Math.max(1, Math.floor(Math.random() * a.length));
-  const cutB = Math.max(1, Math.floor(Math.random() * b.length));
-
-  // 50/50: first half of A + second half of B, or vice versa
-  const result = Math.random() < 0.5
-    ? a.slice(0, cutA) + b.slice(cutB)
-    : b.slice(0, cutB) + a.slice(cutA);
-
-  const trimmed = result.length <= MAX_LEN ? result : result.slice(0, MAX_LEN);
-  if (trimmed.length < MIN_LEN) return null;
-
+  const first = capitalize(rawA);
+  const second = capitalize(rawB);
+  const pair = `${first} + ${second}`;
   return {
-    name: capitalize(trimmed),
-    pair: `${firstOriginal}/${secondOriginal}`,
+    name: pair,
+    pair,
   };
 }
 
@@ -138,15 +175,27 @@ export function suggestCoupleNames(names: string[], count: number = 6): CoupleSu
   if (names.length < 2) return [];
 
   const existing = new Set(names.map((n) => n.toLowerCase()));
+  const { prefixes, suffixes } = findAffixes(names);
   const suggestions: CoupleSuggestion[] = [];
   const seenNames = new Set<string>();
 
   for (let i = 0; i < count * 20 && suggestions.length < count; i++) {
-    const candidate = coupleGenerate(names);
+    const candidate = coupleGenerateByAffix(names, prefixes, suffixes);
     if (!candidate) continue;
 
     const key = candidate.name.toLowerCase();
-    if (existing.has(key) || seenNames.has(key)) continue;
+    const [firstPart = "", secondPart = ""] = candidate.pair
+      .toLowerCase()
+      .split("+")
+      .map((part) => part.trim());
+
+    if (
+      seenNames.has(key) ||
+      existing.has(firstPart) ||
+      existing.has(secondPart)
+    ) {
+      continue;
+    }
 
     seenNames.add(key);
     suggestions.push(candidate);
