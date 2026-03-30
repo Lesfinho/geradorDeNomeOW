@@ -6,6 +6,14 @@
   --glass-bg: rgba(255, 255, 255, 0.08);
   --glass-border: rgba(255, 255, 255, 0.15);
   --glass-highlight: rgba(255, 255, 255, 0.25);
+  --bg-1: #1a1a2e;
+  --bg-2: #16213e;
+  --bg-3: #0f3460;
+  --bg-4: #1a1a2e;
+  --orb-cool: rgba(99, 102, 241, 0.3);
+  --glass-btn-bg: rgba(255, 255, 255, 0.1);
+  --glass-btn-border: rgba(255, 255, 255, 0.18);
+  --glass-btn-hover: rgba(255, 255, 255, 0.18);
   --amber-glow: rgba(245, 193, 60, 0.4);
   --amber-solid: #f5c13c;
   --amber-dark: #d4a632;
@@ -49,7 +57,7 @@
 }
 
 .animated-bg {
-  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
   background-size: 400% 400%;
   animation: mesh-shift 20s ease infinite;
 }
@@ -71,7 +79,7 @@
 
 .orb-2 {
   width: 350px; height: 350px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
+  background: radial-gradient(circle, var(--orb-cool), transparent 70%);
   top: 50%; right: 5%;
   animation: orb-float-2 30s ease-in-out infinite;
 }
@@ -121,7 +129,7 @@
 
 .pill-btn-amber {
   background: linear-gradient(135deg, var(--amber-solid), var(--amber-dark));
-  color: #1a1a2e;
+  color: #ffffff;
   box-shadow: 0 4px 20px var(--amber-glow);
 }
 
@@ -131,15 +139,15 @@
 }
 
 .pill-btn-glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--glass-btn-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--glass-btn-border);
   color: var(--text-primary);
 }
 
 .pill-btn-glass:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--glass-btn-hover);
 }
 
 .pill-btn-glass.active {

@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import { userRouter } from "./routes/users";
 import { nameRouter } from "./routes/names";
+import { gifRouter } from "./routes/gifs";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -11,6 +12,7 @@ app.use(express.json());
 // API routes
 app.use("/api/users", userRouter);
 app.use("/api/names", nameRouter);
+app.use("/api/gifs", gifRouter);
 
 // Serve React frontend
 const frontendPath = path.join(__dirname, "..", "frontend", "dist");

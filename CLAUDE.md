@@ -42,7 +42,7 @@ DATABASE_URL="..." npx prisma db push
 ### Frontend (`frontend/`)
 - Vite + React + Tailwind CSS (JavaScript), dark theme
 - `src/api.js` — fetch wrapper with auth headers
-- `src/gifs.js` — Roadhog GIF URL list for random backgrounds
+- `src/components/GifBackground.jsx` — fullscreen GIF background + fallback GIF list
 - `src/components/GifBackground.jsx` — fullscreen GIF background with overlay
 - `src/components/` — RegisterForm, AddNameForm, DrawName, PoolStats, Header, NameList, Suggestions
 

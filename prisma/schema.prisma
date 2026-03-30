@@ -15,8 +15,19 @@ model AppUser {
   createdAt DateTime    @default(now())
   added     NameEntry[] @relation("AddedBy")
   drawn     NameEntry[] @relation("DrawnBy")
+  gifs      SharedGif[]
 
   @@map("app_user")
+}
+
+model SharedGif {
+  id        Int      @id @default(autoincrement())
+  url       String   @unique @db.Text
+  addedBy   AppUser  @relation(fields: [addedById], references: [id])
+  addedById Int
+  createdAt DateTime @default(now())
+
+  @@map("shared_gif")
 }
 
 model NameEntry {

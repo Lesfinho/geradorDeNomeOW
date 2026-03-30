@@ -49,13 +49,13 @@ As sugestões só ativam com **10+ nomes** no banco. Quanto mais nomes, melhores
 
 ## GIFs de Fundo — Como customizar
 
-O arquivo `frontend/src/gifs.js` contém uma lista de URLs de GIFs do Roadhog.
+O arquivo frontend/src/components/GifBackground.jsx contém uma lista fallback de URLs de GIF para fundo.
 
 ### Para adicionar/trocar GIFs:
 1. Vá em [Tenor](https://tenor.com) e busque "roadhog overwatch"
 2. Clique no GIF que curtir
 3. Clique com botão direito → "Copiar endereço da imagem" (ou "Copy image address")
-4. Cole a URL no array `roadhogGifs` em `frontend/src/gifs.js`
+4. Cole a URL no array fallbackGifs em frontend/src/components/GifBackground.jsx
 
 ### Formato da URL:
 ```

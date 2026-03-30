@@ -1,119 +1,145 @@
-import { useState } from 'react';
-import { getSuggestions, addName } from '../api';
+import { useEffect, useRef, useState } from 'react';
+import { getSuggestions } from '../api';
 import { playClick } from '../sounds';
 
-export default function Suggestions({ onAddSuggestion }) {
+const FAKE_SUGGESTIONS = ['??????', 'ROLANDO', 'SORTEIO', 'ALEATORIO', 'COUPLE?', 'NOME??'];
+
+export default function Suggestions() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [added, setAdded] = useState(new Set());
-  const [nameInput, setNameInput] = useState('');
-  const [addLoading, setAddLoading] = useState(false);
-  const [addSuccess, setAddSuccess] = useState('');
+  const [activeTab, setActiveTab] = useState('normal');
+  const [slotText, setSlotText] = useState('');
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const handleGenerate = async () => {
     playClick();
     setLoading(true);
-    setAdded(new Set());
+    setActiveTab('normal');
+
+    let tick = 0;
+    intervalRef.current = setInterval(() => {
+      setSlotText(FAKE_SUGGESTIONS[tick % FAKE_SUGGESTIONS.length]);
+      tick++;
+    }, 110);
+
+    const startedAt = Date.now();
     try {
       const result = await getSuggestions();
       setData(result);
     } catch {
       setData(null);
     } finally {
+      const elapsed = Date.now() - startedAt;
+      const minimumEffectMs = 1200;
+      if (elapsed < minimumEffectMs) {
+        await new Promise((resolve) => setTimeout(resolve, minimumEffectMs - elapsed));
+      }
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
       setLoading(false);
     }
   };
 
   const handleUseSuggestion = (name) => {
     playClick();
-    setNameInput(name);
+    navigator.clipboard?.writeText(name);
   };
 
-  const handleAddFromInput = async (e) => {
-    e.preventDefault();
-    if (!nameInput.trim()) return;
-    playClick();
-    setAddLoading(true);
-    setAddSuccess('');
-    try {
-      await addName(nameInput.trim());
-      setAddSuccess(`"${nameInput.trim()}" adicionado!`);
-      setAdded((prev) => new Set([...prev, nameInput.trim()]));
-      setNameInput('');
-      onAddSuggestion(nameInput.trim());
-    } catch {
-      setAddSuccess('Erro ao adicionar.');
-    } finally {
-      setAddLoading(false);
-      setTimeout(() => setAddSuccess(''), 3000);
-    }
-  };
+  const normalSuggestions = data?.suggestions || [];
+  const coupleSuggestions = data?.couples || [];
 
   return (
-    <div className="glass-card p-5">
+    <div className="glass-card p-5 text-center">
       <h2 className="text-sm font-semibold text-white/70 mb-1 uppercase tracking-wider">Sugestoes</h2>
       <p className="text-xs text-white/30 mb-4">
-        Gera nomes com padroes, prefixos/sufixos e combinacoes (min. 10 nomes)
+        Gera nomes com padroes, prefixos/sufixos e combinacoes de couple
       </p>
 
-      <button
-        onClick={handleGenerate}
-        disabled={loading}
-        className="pill-btn pill-btn-amber px-5 py-2.5 text-sm mb-4 inline-flex items-center gap-2 disabled:opacity-50"
-      >
-        <span className="text-lg">🎲</span>
-        {loading ? 'Gerando...' : data ? 'Gerar Mais' : 'Gerar Sugestoes'}
-      </button>
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="pill-btn pill-btn-amber px-8 py-3 text-lg font-bold inline-flex items-center gap-2 disabled:opacity-50"
+        >
+          <span className="text-xl">🎲</span>
+          {loading ? 'Sorteando...' : 'Gerar Nome Aleatorio'}
+        </button>
+      </div>
 
-      {data && !data.minReached && (
-        <p className="text-sm text-amber-400/80">
-          Precisa de pelo menos 10 nomes ({data.total}/10)
-        </p>
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab('normal')}
+          className={`pill-btn text-xs px-3 py-1 ${activeTab === 'normal' ? 'pill-btn-amber' : 'pill-btn-glass'}`}
+        >
+          Nome aleatorio
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('couples')}
+          className={`pill-btn text-xs px-3 py-1 ${activeTab === 'couples' ? 'pill-btn-amber' : 'pill-btn-glass'}`}
+        >
+          Couples
+        </button>
+      </div>
+
+      {loading && (
+        <div className="min-h-[56px] flex items-center justify-center mb-3 overflow-hidden">
+          <p className="text-3xl font-bold text-amber-400 animate-slot-spin font-mono">
+            {slotText || 'ROLANDO'}
+          </p>
+        </div>
       )}
 
-      {data && data.suggestions.length > 0 && (
+      {data && activeTab === 'normal' && normalSuggestions.length > 0 && (
         <div className="space-y-2 mt-2 mb-4">
-          {data.suggestions.map((name, i) => (
-            <div key={i} className="flex items-center justify-between bg-amber-400/10 border border-amber-400/15 p-3 rounded-2xl">
+          {normalSuggestions.map((name, i) => (
+            <div key={i} className="flex flex-col items-center gap-2 bg-amber-400/10 border border-amber-400/15 p-3 rounded-2xl">
               <span className="font-medium text-amber-300">{name}</span>
-              {added.has(name) ? (
-                <span className="text-xs text-green-400">Adicionado!</span>
-              ) : (
-                <button
-                  onClick={() => handleUseSuggestion(name)}
-                  className="pill-btn pill-btn-glass text-xs px-3 py-1"
-                >
-                  Usar
-                </button>
-              )}
+              <button
+                onClick={() => handleUseSuggestion(name)}
+                className="pill-btn pill-btn-glass text-xs px-3 py-1"
+              >
+                Copiar
+              </button>
             </div>
           ))}
         </div>
       )}
 
-      {data && data.minReached && data.suggestions.length === 0 && (
-        <p className="text-sm text-white/30 mt-2 mb-4">Nao conseguiu gerar. Tente de novo!</p>
+      {data && activeTab === 'normal' && normalSuggestions.length === 0 && (
+        <p className="text-sm text-white/30 mt-2 mb-4">Nao conseguiu gerar nomes comuns. Tente de novo!</p>
       )}
 
-      <form onSubmit={handleAddFromInput} className="flex gap-2 mt-4 pt-4 border-t border-white/10">
-        <input
-          type="text"
-          value={nameInput}
-          onChange={(e) => setNameInput(e.target.value)}
-          placeholder="Nome para adicionar"
-          className="glass-input flex-1 px-4 py-2 text-sm"
-          maxLength={12}
-          required
-        />
-        <button
-          type="submit"
-          disabled={addLoading || !nameInput.trim()}
-          className="pill-btn pill-btn-amber px-4 py-2 text-sm disabled:opacity-50"
-        >
-          {addLoading ? '...' : 'Adicionar'}
-        </button>
-      </form>
-      {addSuccess && <p className="text-sm text-green-400 mt-2 text-center">{addSuccess}</p>}
+      {data && activeTab === 'couples' && coupleSuggestions.length > 0 && (
+        <div className="space-y-2 mt-2 mb-4">
+          {coupleSuggestions.map((item, i) => (
+            <div key={`${item.name}-${i}`} className="bg-amber-400/10 border border-amber-400/15 p-3 rounded-2xl">
+              <div className="flex flex-col items-center gap-2">
+                <span className="font-medium text-amber-300">{item.name}</span>
+                <button
+                  onClick={() => handleUseSuggestion(item.name)}
+                  className="pill-btn pill-btn-glass text-xs px-3 py-1"
+                >
+                  Copiar
+                </button>
+              </div>
+              <p className="text-xs text-white/50 mt-1">Couple: {item.pair}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {data && activeTab === 'couples' && coupleSuggestions.length === 0 && (
+        <p className="text-sm text-white/30 mt-2 mb-4">Nao conseguiu gerar nomes de couple. Tente de novo!</p>
+      )}
+
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getStats, addName } from './api';
+import { getStats } from './api';
 import Header from './components/Header';
 import RegisterForm from './components/RegisterForm';
 import AddNameForm from './components/AddNameForm';
@@ -45,15 +45,6 @@ function App() {
     setStats(null);
   };
 
-  const handleAddSuggestion = async (name) => {
-    try {
-      await addName(name);
-      refreshStats();
-    } catch {
-      // ignore
-    }
-  };
-
   const handleSetGif = (url) => {
     setCustomGif(url);
     if (url) {
@@ -75,35 +66,45 @@ function App() {
 
   return (
     <GifBackground customGif={customGif} onChangeGif={handleSetGif}>
-      <Header user={user} onLogout={handleLogout} />
-      <div className="max-w-2xl mx-auto px-4 mt-4">
-        <div className="flex gap-2 mb-4 justify-center">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => { playClick(); setTab(t.id); }}
-              className={`pill-btn px-4 py-2 text-sm ${
-                tab === t.id
-                  ? 'pill-btn-glass active'
-                  : 'pill-btn-glass'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+      <div className="min-h-screen flex flex-col">
+        <div className="w-full max-w-2xl mx-auto px-4 pt-4">
+          <Header user={user} onLogout={handleLogout} />
+        </div>
+
+        <div className="w-full max-w-2xl mx-auto px-4">
+          <div className="flex gap-2 my-4 justify-center">
+            {tabs.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => { playClick(); setTab(t.id); }}
+                className={`pill-btn px-4 py-2 text-sm ${
+                  tab === t.id
+                    ? 'pill-btn-glass active'
+                    : 'pill-btn-glass'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={`flex-1 flex justify-center px-4 py-6 ${tab === 'suggest' ? 'items-start pt-2' : 'items-center'}`}>
+          <div className="w-full max-w-2xl">
+            <main className="space-y-3">
+              {tab === 'main' && (
+                <>
+                  <PoolStats stats={stats} />
+                  <DrawName onDrawn={refreshStats} />
+                  <AddNameForm onNameAdded={refreshStats} />
+                </>
+              )}
+              {tab === 'list' && <NameList refreshKey={refreshKey} />}
+              {tab === 'suggest' && <Suggestions />}
+            </main>
+          </div>
         </div>
       </div>
-      <main className="max-w-2xl mx-auto px-4 pb-6 space-y-3">
-        {tab === 'main' && (
-          <>
-            <PoolStats stats={stats} />
-            <AddNameForm onNameAdded={refreshStats} />
-            <DrawName onDrawn={refreshStats} />
-          </>
-        )}
-        {tab === 'list' && <NameList refreshKey={refreshKey} />}
-        {tab === 'suggest' && <Suggestions onAddSuggestion={handleAddSuggestion} />}
-      </main>
     </GifBackground>
   );
 }

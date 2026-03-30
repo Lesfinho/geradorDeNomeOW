@@ -41,11 +41,12 @@ export async function addName(name) {
     headers: authHeaders(),
     body: JSON.stringify({ name })
   });
+  const data = await res.json();
   if (!res.ok) {
     if (res.status === 401) throw new Error('Sessão expirada');
-    throw new Error('Erro ao adicionar nome');
+    throw new Error(data.error || 'Erro ao adicionar nome');
   }
-  return res.json();
+  return data;
 }
 
 export async function drawName() {
@@ -75,12 +76,32 @@ export async function getSuggestions() {
   const res = await fetch(`${BASE}/names/suggest`, {
     headers: authHeaders(),
   });
-  if (!res.ok) return { suggestions: [], minReached: false, total: 0 };
+  if (!res.ok) return { suggestions: [], couples: [], total: 0 };
   return res.json();
 }
 
 export async function getStats() {
   const res = await fetch(`${BASE}/names/stats`);
   if (!res.ok) throw new Error('Erro ao buscar stats');
+  return res.json();
+}
+
+export async function addSharedGif(url) {
+  const res = await fetch(`${BASE}/gifs`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ url })
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) throw new Error('Sessao expirada');
+    throw new Error(data.error || 'Erro ao salvar GIF');
+  }
+  return data;
+}
+
+export async function getRandomSharedGif() {
+  const res = await fetch(`${BASE}/gifs/random`);
+  if (!res.ok) throw new Error('Erro ao buscar GIF aleatorio');
   return res.json();
 }

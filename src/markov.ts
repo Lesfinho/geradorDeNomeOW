@@ -2,6 +2,15 @@ const MAX_LEN = 12;
 const MIN_LEN = 3;
 const ORDER = 2;
 
+export type CoupleSuggestion = {
+  name: string;
+  pair: string;
+};
+
+function capitalize(name: string): string {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 // --- Markov Chain ---
 function buildChain(names: string[]): Map<string, string[]> {
   const chain = new Map<string, string[]>();
@@ -93,16 +102,20 @@ function affixGenerate(names: string[], prefixes: string[], suffixes: string[]):
 }
 
 // --- Couple name blender ---
-function coupleGenerate(names: string[]): string | null {
+function coupleGenerate(names: string[]): CoupleSuggestion | null {
   if (names.length < 2) return null;
-  const lower = names.map((n) => n.toLowerCase());
-  const a = lower[Math.floor(Math.random() * lower.length)];
-  let b = lower[Math.floor(Math.random() * lower.length)];
+  const indexA = Math.floor(Math.random() * names.length);
+  let indexB = Math.floor(Math.random() * names.length);
   let attempts = 0;
-  while (b === a && attempts++ < 10) {
-    b = lower[Math.floor(Math.random() * lower.length)];
+  while (indexB === indexA && attempts++ < 10) {
+    indexB = Math.floor(Math.random() * names.length);
   }
-  if (a === b) return null;
+  if (indexA === indexB) return null;
+
+  const firstOriginal = names[indexA];
+  const secondOriginal = names[indexB];
+  const a = firstOriginal.toLowerCase();
+  const b = secondOriginal.toLowerCase();
 
   const cutA = Math.max(1, Math.floor(Math.random() * a.length));
   const cutB = Math.max(1, Math.floor(Math.random() * b.length));
@@ -112,13 +125,39 @@ function coupleGenerate(names: string[]): string | null {
     ? a.slice(0, cutA) + b.slice(cutB)
     : b.slice(0, cutB) + a.slice(cutA);
 
-  if (result.length >= MIN_LEN && result.length <= MAX_LEN) return result;
-  return result.slice(0, MAX_LEN).length >= MIN_LEN ? result.slice(0, MAX_LEN) : null;
+  const trimmed = result.length <= MAX_LEN ? result : result.slice(0, MAX_LEN);
+  if (trimmed.length < MIN_LEN) return null;
+
+  return {
+    name: capitalize(trimmed),
+    pair: `${firstOriginal}/${secondOriginal}`,
+  };
+}
+
+export function suggestCoupleNames(names: string[], count: number = 6): CoupleSuggestion[] {
+  if (names.length < 2) return [];
+
+  const existing = new Set(names.map((n) => n.toLowerCase()));
+  const suggestions: CoupleSuggestion[] = [];
+  const seenNames = new Set<string>();
+
+  for (let i = 0; i < count * 20 && suggestions.length < count; i++) {
+    const candidate = coupleGenerate(names);
+    if (!candidate) continue;
+
+    const key = candidate.name.toLowerCase();
+    if (existing.has(key) || seenNames.has(key)) continue;
+
+    seenNames.add(key);
+    suggestions.push(candidate);
+  }
+
+  return suggestions;
 }
 
 // --- Main entry ---
 export function suggestNames(names: string[], count: number = 6): string[] {
-  if (names.length < 10) return [];
+  if (names.length === 0) return [];
 
   const chain = buildChain(names);
   const { prefixes, suffixes } = findAffixes(names);
@@ -129,7 +168,6 @@ export function suggestNames(names: string[], count: number = 6): string[] {
   const strategies = [
     () => markovGenerate(chain),
     () => affixGenerate(names, prefixes, suffixes),
-    () => coupleGenerate(names),
   ];
 
   for (let i = 0; i < count * 10 && suggestions.length < count; i++) {
@@ -137,7 +175,7 @@ export function suggestNames(names: string[], count: number = 6): string[] {
     const raw = strategy();
     if (!raw) continue;
 
-    const name = raw.charAt(0).toUpperCase() + raw.slice(1);
+    const name = capitalize(raw);
     const key = name.toLowerCase();
 
     if (!existing.has(key) && !seen.has(key) && name.length <= MAX_LEN) {

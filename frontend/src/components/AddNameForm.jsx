@@ -6,22 +6,27 @@ export default function AddNameForm({ onNameAdded }) {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     playClick();
     setLoading(true);
     setSuccess('');
+    setError('');
     try {
       await addName(name.trim());
       setSuccess(`"${name.trim()}" adicionado!`);
       setName('');
       onNameAdded();
-    } catch {
-      setSuccess('Erro ao adicionar nome.');
+    } catch (err) {
+      setError(err.message || 'Erro ao adicionar nome.');
     } finally {
       setLoading(false);
-      setTimeout(() => setSuccess(''), 3000);
+      setTimeout(() => {
+        setSuccess('');
+        setError('');
+      }, 3000);
     }
   };
 
@@ -48,6 +53,9 @@ export default function AddNameForm({ onNameAdded }) {
       </form>
       {success && (
         <p className="text-sm text-green-400 mt-2 text-center">{success}</p>
+      )}
+      {error && (
+        <p className="text-sm text-red-400 mt-2 text-center">{error}</p>
       )}
     </div>
   );
